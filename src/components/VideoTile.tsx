@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Mic, MicOff, Pin, MoreHorizontal } from "lucide-react";
 import { 
   DropdownMenu, 
@@ -14,6 +14,7 @@ interface VideoTileProps {
   isActive?: boolean;
   isSelf?: boolean;
   className?: string;
+  onClick?: () => void;
 }
 
 export default function VideoTile({ 
@@ -21,7 +22,8 @@ export default function VideoTile({
   isMuted = false, 
   isActive = false, 
   isSelf = false,
-  className = ""
+  className = "",
+  onClick
 }: VideoTileProps) {
   const [mouseOver, setMouseOver] = useState(false);
   const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
@@ -41,11 +43,12 @@ export default function VideoTile({
 
   return (
     <div 
-      className={`relative rounded-lg overflow-hidden shadow-sm border transition-all duration-300 ${
+      className={`relative rounded-xl overflow-hidden shadow-sm border transition-all duration-300 ${
         isActive ? "ring-2 ring-primary" : ""
-      } ${className}`}
+      } ${className} cursor-pointer hover:shadow-md`}
       onMouseEnter={() => setMouseOver(true)}
       onMouseLeave={() => setMouseOver(false)}
+      onClick={onClick}
     >
       {/* Video/Avatar Placeholder */}
       <div className="w-full h-full aspect-video bg-muted flex items-center justify-center">
