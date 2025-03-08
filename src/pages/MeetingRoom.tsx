@@ -21,7 +21,7 @@ import {
   Menu,
   X,
   Info,
-  Record,
+  Circle,
   Link as LinkIcon,
   Copy,
 } from "lucide-react";
@@ -123,7 +123,7 @@ export default function MeetingRoom() {
         <div className="flex items-center space-x-2">
           {isRecording && (
             <div className="hidden sm:flex items-center space-x-1 mr-2 bg-destructive/10 text-destructive px-2 py-1 rounded-full text-xs">
-              <Record className="h-3 w-3 animate-pulse" />
+              <Circle className="h-3 w-3 animate-pulse" />
               <span>Recording</span>
             </div>
           )}
@@ -142,7 +142,7 @@ export default function MeetingRoom() {
             onClick={toggleRecording}
             className={isRecording ? "text-destructive" : ""}
           >
-            <Record className="h-5 w-5" />
+            <Circle className="h-5 w-5" />
           </Button>
           <Button variant="ghost" size="icon">
             <Info className="h-5 w-5" />
@@ -232,7 +232,7 @@ export default function MeetingRoom() {
 
         {/* Sidebar (Mobile) */}
         <Sheet open={isMobile && isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-          <SheetContent side="left" className="p-0 w-[85%] sm:w-80" overlay>
+          <SheetContent side="left" className="p-0 w-[85%] sm:w-80">
             <SheetHeader className="p-4 border-b">
               <SheetTitle>Meeting Controls</SheetTitle>
             </SheetHeader>
@@ -358,3 +358,4 @@ function MicOff(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
