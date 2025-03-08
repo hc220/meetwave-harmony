@@ -1,123 +1,133 @@
 
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ArrowRight, Video, AlertCircle, Mic, MicOff } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
-import { ArrowRight, Users } from "lucide-react";
+import { toast } from "sonner";
 
 export default function JoinMeeting() {
-  const [meetingId, setMeetingId] = useState("");
+  const [searchParams] = useSearchParams();
+  const [meetingId, setMeetingId] = useState(searchParams.get("id") || "");
   const [name, setName] = useState("");
-  const [isValid, setIsValid] = useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(true);
+  const [videoEnabled, setVideoEnabled] = useState(true);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-
-  useEffect(() => {
-    setIsValid(meetingId.trim().length > 0 && name.trim().length > 0);
-  }, [meetingId, name]);
 
   const handleJoin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (isValid) {
-      navigate(`/meeting/${meetingId}`);
+    if (!meetingId.trim()) {
+      setError("Please enter a meeting ID");
+      return;
     }
+    if (!name.trim()) {
+      setError("Please enter your name");
+      return;
+    }
+    
+    // In a real app, this would validate the meeting ID
+    // Here we'll just navigate to the meeting room
+    navigate(`/meeting/${meetingId}`);
   };
-
-  const recentMeetings = [
-    { id: "meeting-abc-123", name: "Weekly Team Sync", time: "Yesterday" },
-    { id: "meeting-def-456", name: "Product Review", time: "2 days ago" },
-    { id: "meeting-ghi-789", name: "Design Workshop", time: "Last week" },
-  ];
 
   return (
     <div className="min-h-screen flex flex-col">
       <NavBar />
-      <main className="flex-grow flex items-center justify-center py-16 px-4 meeting-gradient">
-        <div className="max-w-4xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 animate-scale-in">
-          <div className="flex flex-col justify-center">
-            <div className="mb-8">
-              <h1 className="text-3xl md:text-4xl font-bold mb-3">Join a Meeting</h1>
-              <p className="text-muted-foreground">
-                Enter a meeting ID to join an existing QuickMeet conference
-              </p>
-            </div>
-
-            <form onSubmit={handleJoin} className="space-y-4">
-              <div>
-                <label htmlFor="meeting-id" className="block text-sm font-medium mb-1">
-                  Meeting ID
-                </label>
-                <Input
-                  id="meeting-id"
-                  placeholder="Enter meeting ID"
-                  value={meetingId}
-                  onChange={(e) => setMeetingId(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium mb-1">
-                  Your Name
-                </label>
-                <Input
-                  id="name"
-                  placeholder="Enter your name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <Button 
-                type="submit" 
-                className="w-full mt-2" 
-                disabled={!isValid}
-              >
-                Join Meeting <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </form>
+      <main className="flex-grow pt-24 pb-16">
+        <div className="container max-w-md mx-auto px-4 md:px-6">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold mb-4">Join a Meeting</h1>
+            <p className="text-muted-foreground">
+              Enter the meeting ID to connect with others
+            </p>
           </div>
 
-          <div className="bg-card p-6 rounded-xl border shadow-sm">
-            <div className="flex items-center space-x-2 mb-4">
-              <Users className="h-5 w-5 text-primary" />
-              <h2 className="text-xl font-semibold">Recent Meetings</h2>
-            </div>
-            
-            <div className="space-y-3">
-              {recentMeetings.map((meeting) => (
-                <div 
-                  key={meeting.id}
-                  className="p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors cursor-pointer"
-                  onClick={() => {
-                    setMeetingId(meeting.id);
-                    if (name) {
-                      navigate(`/meeting/${meeting.id}`);
-                    }
-                  }}
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-medium">{meeting.name}</p>
-                      <p className="text-sm text-muted-foreground mt-1">ID: {meeting.id}</p>
+          <div className="bg-card border rounded-lg shadow-sm p-6">
+            <form onSubmit={handleJoin}>
+              {error && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="meeting-id">Meeting ID</Label>
+                  <Input
+                    id="meeting-id"
+                    value={meetingId}
+                    onChange={(e) => {
+                      setMeetingId(e.target.value);
+                      setError("");
+                    }}
+                    placeholder="Enter meeting ID"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="name">Your Name</Label>
+                  <Input
+                    id="name"
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      setError("");
+                    }}
+                    placeholder="Enter your name"
+                  />
+                </div>
+
+                <div className="space-y-4 mt-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      {audioEnabled ? (
+                        <Mic className="h-5 w-5 text-primary" />
+                      ) : (
+                        <MicOff className="h-5 w-5 text-muted-foreground" />
+                      )}
+                      <span>Join with audio</span>
                     </div>
-                    <span className="text-xs text-muted-foreground">{meeting.time}</span>
+                    <Switch 
+                      checked={audioEnabled} 
+                      onCheckedChange={setAudioEnabled} 
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Video className={`h-5 w-5 ${videoEnabled ? "text-primary" : "text-muted-foreground"}`} />
+                      <span>Join with video</span>
+                    </div>
+                    <Switch 
+                      checked={videoEnabled} 
+                      onCheckedChange={setVideoEnabled} 
+                    />
                   </div>
                 </div>
-              ))}
-            </div>
-            
-            <div className="mt-4 pt-4 border-t">
-              <p className="text-sm text-muted-foreground">
+
+                <Button type="submit" className="w-full mt-6">
+                  Join Meeting
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+            </form>
+
+            <div className="mt-6 pt-6 border-t text-center text-sm text-muted-foreground">
+              <p>
                 Don't have a meeting ID?{" "}
-                <Button 
-                  variant="link" 
-                  className="p-0 h-auto" 
+                <Button
+                  variant="link"
+                  className="p-0 h-auto"
                   onClick={() => navigate("/create")}
                 >
-                  Create a new meeting
+                  Create a meeting
                 </Button>
               </p>
             </div>

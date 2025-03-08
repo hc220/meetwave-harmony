@@ -1,178 +1,161 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Check, Copy, Video, Calendar, Users } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
-import { Calendar, Clock, ArrowRight, Copy, Lock, Video } from "lucide-react";
 import { toast } from "sonner";
 
 export default function CreateMeeting() {
-  const [meetingName, setMeetingName] = useState("");
-  const [requirePassword, setRequirePassword] = useState(false);
-  const [password, setPassword] = useState("");
-  const [enableWaitingRoom, setEnableWaitingRoom] = useState(true);
-  const [isValid, setIsValid] = useState(false);
+  const [meetingId] = useState("quick-meet-" + Math.random().toString(36).substring(2, 8));
+  const [copied, setCopied] = useState(false);
+  const [waitingRoom, setWaitingRoom] = useState(true);
+  const [mutedOnEntry, setMutedOnEntry] = useState(true);
   const navigate = useNavigate();
-  
-  // Generate a random meeting ID
-  const [meetingId, setMeetingId] = useState(() => {
-    const randomId = `meeting-${Math.random().toString(36).substring(2, 7)}-${Math.random().toString(36).substring(2, 7)}`;
-    return randomId;
-  });
-  
-  useEffect(() => {
-    setIsValid(meetingName.trim().length > 0 && (!requirePassword || password.trim().length > 0));
-  }, [meetingName, requirePassword, password]);
-  
-  const handleCreate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isValid) {
-      toast.success("Meeting created successfully!");
-      navigate(`/meeting/${meetingId}`);
-    }
+
+  const copyMeetingLink = () => {
+    navigator.clipboard.writeText(`${window.location.origin}/join?id=${meetingId}`);
+    setCopied(true);
+    toast.success("Meeting link copied to clipboard");
+    setTimeout(() => setCopied(false), 2000);
   };
-  
-  const copyMeetingId = () => {
-    navigator.clipboard.writeText(meetingId);
-    toast.success("Meeting ID copied to clipboard");
+
+  const startMeeting = () => {
+    navigate(`/meeting/${meetingId}`);
   };
-  
-  const regenerateMeetingId = () => {
-    const newId = `meeting-${Math.random().toString(36).substring(2, 7)}-${Math.random().toString(36).substring(2, 7)}`;
-    setMeetingId(newId);
-    toast.success("New meeting ID generated");
+
+  const scheduleMeeting = () => {
+    toast.info("Meeting scheduled for later");
+    // This would typically integrate with a calendar API
   };
 
   return (
     <div className="min-h-screen flex flex-col">
       <NavBar />
-      <main className="flex-grow flex items-center justify-center py-16 px-4 meeting-gradient">
-        <div className="max-w-3xl w-full mx-auto animate-scale-in">
-          <div className="bg-card border rounded-xl shadow-sm overflow-hidden">
-            <div className="p-6 border-b bg-muted/30">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Video className="h-5 w-5 text-primary" />
+      <main className="flex-grow pt-24 pb-16">
+        <div className="container max-w-3xl mx-auto px-4 md:px-6">
+          <div className="text-center mb-10">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">Create a Meeting</h1>
+            <p className="text-muted-foreground max-w-md mx-auto">
+              Set up your video conference and invite participants to join
+            </p>
+          </div>
+
+          <div className="bg-card border rounded-lg shadow-sm p-6 md:p-8">
+            <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 mb-8">
+              <div className="flex-1">
+                <div className="mb-4">
+                  <h2 className="text-xl font-semibold mb-2">Meeting Information</h2>
+                  <p className="text-muted-foreground text-sm">
+                    Your personal meeting room is ready to use
+                  </p>
                 </div>
-                <h1 className="text-2xl font-bold">Create a New Meeting</h1>
-              </div>
-            </div>
-            
-            <form onSubmit={handleCreate} className="p-6">
-              <div className="space-y-6">
-                <div>
-                  <label htmlFor="meeting-name" className="block text-sm font-medium mb-1">
-                    Meeting Name
-                  </label>
-                  <Input
-                    id="meeting-name"
-                    placeholder="Enter meeting name"
-                    value={meetingName}
-                    onChange={(e) => setMeetingName(e.target.value)}
-                    required
-                  />
+
+                <div className="flex items-center mt-4 mb-6">
+                  <div className="bg-primary/10 rounded-full p-3 mr-4">
+                    <Video className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium">Personal Meeting ID</p>
+                    <p className="text-muted-foreground break-all">{meetingId}</p>
+                  </div>
                 </div>
-                
-                <div>
-                  <label htmlFor="meeting-id" className="block text-sm font-medium mb-1">
-                    Meeting ID
-                  </label>
-                  <div className="flex">
+
+                <div className="mb-6">
+                  <div className="flex mb-3">
                     <Input
-                      id="meeting-id"
-                      value={meetingId}
+                      value={`${window.location.origin}/join?id=${meetingId}`}
                       readOnly
                       className="rounded-r-none"
                     />
                     <Button
-                      type="button"
-                      onClick={copyMeetingId}
+                      onClick={copyMeetingLink}
                       variant="outline"
-                      className="rounded-l-none border-l-0"
+                      className={`rounded-l-none border-l-0 ${
+                        copied ? "bg-green-500 text-white" : ""
+                      }`}
                     >
-                      <Copy className="h-4 w-4" />
+                      {copied ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+                      {copied ? "Copied" : "Copy"}
                     </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    You can share this ID with participants to join your meeting
-                  </p>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="mt-2"
-                    onClick={regenerateMeetingId}
-                  >
-                    Generate new ID
-                  </Button>
-                </div>
-                
-                <div className="border rounded-lg p-4 space-y-4 bg-muted/30">
-                  <h3 className="font-medium flex items-center">
-                    <Lock className="h-4 w-4 mr-2" />
-                    Security Options
-                  </h3>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <label htmlFor="require-password" className="font-medium">
-                        Require Meeting Password
-                      </label>
-                      <p className="text-sm text-muted-foreground">
-                        Add an extra layer of security
-                      </p>
-                    </div>
-                    <Switch
-                      id="require-password"
-                      checked={requirePassword}
-                      onCheckedChange={setRequirePassword}
-                    />
-                  </div>
-                  
-                  {requirePassword && (
-                    <div className="pl-6 border-l-2 border-primary/20 animate-fade-in">
-                      <label htmlFor="password" className="block text-sm font-medium mb-1">
-                        Password
-                      </label>
-                      <Input
-                        id="password"
-                        type="password"
-                        placeholder="Enter meeting password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required={requirePassword}
-                      />
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <label htmlFor="waiting-room" className="font-medium">
-                        Enable Waiting Room
-                      </label>
-                      <p className="text-sm text-muted-foreground">
-                        Admit participants manually
-                      </p>
-                    </div>
-                    <Switch
-                      id="waiting-room"
-                      checked={enableWaitingRoom}
-                      onCheckedChange={setEnableWaitingRoom}
-                    />
-                  </div>
-                </div>
-                
-                <div className="pt-4 border-t flex justify-end">
-                  <Button type="submit" disabled={!isValid}>
-                    Create Meeting <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
                 </div>
               </div>
-            </form>
+
+              <div className="flex md:flex-col gap-3">
+                <Button onClick={startMeeting} size="lg" className="flex-1 md:w-auto">
+                  <Video className="mr-2 h-5 w-5" />
+                  Start Meeting
+                </Button>
+                <Button onClick={scheduleMeeting} variant="outline" size="lg" className="flex-1 md:w-auto">
+                  <Calendar className="mr-2 h-5 w-5" />
+                  Schedule
+                </Button>
+              </div>
+            </div>
+
+            <Separator className="my-6" />
+
+            <h3 className="text-lg font-medium mb-4">Meeting Options</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="waiting-room">Waiting Room</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Participants need permission to join
+                  </p>
+                </div>
+                <Switch
+                  id="waiting-room"
+                  checked={waitingRoom}
+                  onCheckedChange={setWaitingRoom}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="muted-on-entry">Mute on Entry</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Participants join with their microphone muted
+                  </p>
+                </div>
+                <Switch
+                  id="muted-on-entry"
+                  checked={mutedOnEntry}
+                  onCheckedChange={setMutedOnEntry}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="participants-limit">Participant Limit</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Set maximum number of participants
+                  </p>
+                </div>
+                <div className="w-16">
+                  <Input id="participants-limit" type="number" defaultValue={25} min={1} max={100} />
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-6" />
+
+            <div className="flex flex-col md:flex-row gap-4 mt-8">
+              <Button onClick={startMeeting} className="flex-1">
+                <Users className="mr-2 h-4 w-4" />
+                Start Instant Meeting
+              </Button>
+              <Button onClick={copyMeetingLink} variant="outline" className="flex-1">
+                <Copy className="mr-2 h-4 w-4" />
+                Copy Invitation
+              </Button>
+            </div>
           </div>
         </div>
       </main>

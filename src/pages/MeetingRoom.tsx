@@ -26,12 +26,18 @@ import {
   Copy,
 } from "lucide-react";
 import { toast } from "sonner";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
+// Enhanced fake participants list
 const participants = [
   { id: 1, name: "You", isSelf: true, isMuted: false },
   { id: 2, name: "John Doe", isMuted: true },
   { id: 3, name: "Jane Smith", isMuted: false },
   { id: 4, name: "David Johnson", isMuted: true },
+  { id: 5, name: "Sarah Williams", isMuted: false },
+  { id: 6, name: "Michael Chen", isMuted: true },
+  { id: 7, name: "Emily Rodriguez", isMuted: false },
+  { id: 8, name: "Robert Taylor", isMuted: false },
 ];
 
 export default function MeetingRoom() {
@@ -39,6 +45,7 @@ export default function MeetingRoom() {
   const [isRecording, setIsRecording] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeParticipant, setActiveParticipant] = useState(1);
+  // Enhanced fake chat messages
   const [messages, setMessages] = useState<Array<{id: number, sender: string, text: string, time: string}>>([
     {
       id: 1,
@@ -51,6 +58,42 @@ export default function MeetingRoom() {
       sender: "Jane Smith",
       text: "Good to be here. Shall we go through the agenda?",
       time: "10:31 AM",
+    },
+    {
+      id: 3,
+      sender: "David Johnson",
+      text: "I shared the presentation in the team channel. Let me know if anyone can't access it.",
+      time: "10:32 AM",
+    },
+    {
+      id: 4,
+      sender: "Sarah Williams",
+      text: "Got it, thanks David. The slides look great!",
+      time: "10:33 AM",
+    },
+    {
+      id: 5,
+      sender: "Michael Chen",
+      text: "I have a question about slide 4. Can we discuss that section in more detail?",
+      time: "10:35 AM",
+    },
+    {
+      id: 6,
+      sender: "You",
+      text: "Sure Michael, we'll cover that in the Q&A section.",
+      time: "10:36 AM",
+    },
+    {
+      id: 7,
+      sender: "Emily Rodriguez",
+      text: "Just joined. Sorry I'm late!",
+      time: "10:38 AM",
+    },
+    {
+      id: 8,
+      sender: "Robert Taylor",
+      text: "No problem Emily. We're just getting started with the main presentation.",
+      time: "10:39 AM",
     },
   ]);
   const [newMessage, setNewMessage] = useState("");
@@ -358,4 +401,3 @@ function MicOff(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
-
