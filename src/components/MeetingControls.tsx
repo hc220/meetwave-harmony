@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { 
-  Mic, MicOff, Video, VideoOff, Share, MessageSquare, 
-  Users, Phone, Settings 
+  Mic, MicOff, Video, VideoOff, Share, Users, MessageSquare, 
+  MoreVertical, Phone, Settings 
 } from "lucide-react";
 import { 
   Tooltip,
@@ -20,14 +20,10 @@ export default function MeetingControls({ onEndCall }: MeetingControlsProps) {
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [showParticipants, setShowParticipants] = useState(false);
 
   const toggleMute = () => setIsMuted(!isMuted);
   const toggleVideo = () => setIsVideoOff(!isVideoOff);
   const toggleSharing = () => setIsSharing(!isSharing);
-  const toggleChat = () => setIsChatOpen(!isChatOpen);
-  const toggleParticipants = () => setShowParticipants(!showParticipants);
 
   return (
     <div className="glass rounded-full py-3 px-4 inline-flex items-center space-x-2">
@@ -83,10 +79,9 @@ export default function MeetingControls({ onEndCall }: MeetingControlsProps) {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button 
-              onClick={toggleParticipants}
-              variant={showParticipants ? "outline" : "ghost"}
+              variant="ghost" 
               size="icon" 
-              className={`rounded-full h-12 w-12 transition-all duration-300 ${showParticipants ? 'border-primary text-primary' : ''}`}
+              className="rounded-full h-12 w-12 transition-all duration-300"
             >
               <Users className="h-5 w-5" />
             </Button>
@@ -99,10 +94,9 @@ export default function MeetingControls({ onEndCall }: MeetingControlsProps) {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button 
-              onClick={toggleChat}
-              variant={isChatOpen ? "outline" : "ghost"}
+              variant="ghost" 
               size="icon" 
-              className={`rounded-full h-12 w-12 transition-all duration-300 ${isChatOpen ? 'border-primary text-primary' : ''}`}
+              className="rounded-full h-12 w-12 transition-all duration-300"
             >
               <MessageSquare className="h-5 w-5" />
             </Button>
